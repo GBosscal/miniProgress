@@ -16,6 +16,10 @@ class PointService:
     @classmethod
     async def add_point(cls, name: str, pic: str, stamp_id: int, latitude, longitude):
         """新增一个打卡点"""
+        # 判断当前集邮册是否存在重名的打卡点
+        mark = Point.checking_point_dup_name(stamp_id, name)
+        if mark:
+            return ErrorCode.PointDupName
         mark = Point.add_point(name, pic, stamp_id, latitude, longitude)
         return ErrorCode.Success if mark else ErrorCode.PointAddError
 
@@ -25,6 +29,9 @@ class PointService:
         point_info = Point.get_point_by_id(point_id)
         if not point_info:
             return ErrorCode.PointNotExists
+        mark = Point.checking_point_dup_name(stamp_id, name)
+        if mark:
+            return ErrorCode.PointDupName
         mark = Point.update_point(point_info, name, pic, stamp_id, latitude, longitude)
         return ErrorCode.Success if mark else ErrorCode.PointUpdateError
 

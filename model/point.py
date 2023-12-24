@@ -79,6 +79,13 @@ class Point(BaseModel):
             return session.query(cls).filter_by(id=point_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
 
     @classmethod
+    def checking_point_dup_name(cls, stamp_id: int, name: str):
+        with create_db_session() as session:
+            data = session.query(cls).filter_by(
+                stamp_id=stamp_id, is_deleted=DeleteOrNot.NotDeleted.value, name=name).first()
+            return True if data else False
+
+    @classmethod
     def query_point_by_latitude(cls, stamp_ids: list, latitude, longitude):
         location = cls.create_location(latitude, longitude)
         radius = 1000  # 距离设定为1000米内

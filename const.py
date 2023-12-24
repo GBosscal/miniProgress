@@ -47,6 +47,7 @@ class ErrorCode(EnumBase):
     PointAddError = "1005001"
     PointNotExists = "1005002"
     PointUpdateError = "1005003"
+    PointDupName = "1005003"
 
     # 打卡打卡点
     CheckInPointAddError = "1006001"
@@ -78,6 +79,7 @@ class ErrorMsg(EnumBase):
     PointAddError = "打卡点新增失败"
     PointNotExists = "打卡点不存在"
     PointUpdateError = "打卡点更新失败"
+    PointDupName = "打卡点在当前集邮册中已存在"
 
 
 class RedisKey:
