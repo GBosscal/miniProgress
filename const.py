@@ -47,7 +47,7 @@ class ErrorCode(EnumBase):
     PointAddError = "1005001"
     PointNotExists = "1005002"
     PointUpdateError = "1005003"
-    PointDupName = "1005003"
+    PointDupName = "1005004"
 
     # 打卡打卡点
     CheckInPointAddError = "1006001"
