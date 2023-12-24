@@ -36,11 +36,21 @@ class PointService:
         return ErrorCode.Success if mark else ErrorCode.PointUpdateError
 
     @classmethod
-    async def fuzzy_query_point(cls, city_id: int, latitude, longitude):
+    async def fuzzy_query_point(cls, city_name: str, latitude, longitude):
         """根据城市ID以及经纬度模糊查询打卡点"""
-        stamps = Stamp.query_stamp_by_city_id(city_id)
+        stamps = Stamp.query_stamp_by_city_name(city_name)
         if not stamps:
             return ErrorCode.StampNotExistsInCity
         stamp_ids = [stamp.id for stamp in stamps]
         points = Point.query_point_by_latitude(stamp_ids, latitude, longitude)
+        return [point.to_dict() for point in points]
+
+    @classmethod
+    async def query_point_by_city_name(cls, city_name: str):
+        """根据城市名称查询打卡点"""
+        stamps = Stamp.query_stamp_by_city_name(city_name)
+        if not stamps:
+            return ErrorCode.StampNotExistsInCity
+        stamp_ids = [stamp.id for stamp in stamps]
+        points = Point.get_point_by_stamp_ids(stamp_ids)
         return [point.to_dict() for point in points]

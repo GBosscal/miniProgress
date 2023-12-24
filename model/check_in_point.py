@@ -41,6 +41,16 @@ class CheckInPoint(BaseModel):
             ).all()
 
     @classmethod
+    def get_points_by_user_id(cls, user_id:int):
+        with create_db_session() as session:
+            return session.query(cls).filter(
+                and_(
+                    cls.user_id == user_id,
+                    cls.is_deleted == DeleteOrNot.NotDeleted.value
+                )
+            ).all()
+
+    @classmethod
     def add_check_in_point(cls, user_id: int, pic: str, point_id: int):
         with create_db_session() as session:
             new_point = CheckInPoint(user_id, pic, point_id)

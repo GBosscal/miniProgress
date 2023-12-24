@@ -58,7 +58,7 @@ class Point(BaseModel):
     @classmethod
     def get_point_by_stamp_ids(cls, stamp_ids: list):
         with create_db_session() as session:
-            return session.query(cls).filter(cls.id.in_(stamp_ids)).filter_by(
+            return session.query(cls).filter(cls.stamp_id.in_(stamp_ids)).filter_by(
                 is_deleted=DeleteOrNot.NotDeleted.value).all()
 
     @classmethod

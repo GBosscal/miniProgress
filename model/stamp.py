@@ -19,15 +19,15 @@ class Stamp(BaseModel):
 
     name = Column(VARCHAR(32), nullable=False)  # 集邮册名称
     pic = Column(VARCHAR(128), nullable=True)  # 集邮册图片
-    city_id = Column(Integer, nullable=False)  # 城市ID
+    city_name = Column(VARCHAR(64), nullable=False)  # 城市名称
 
-    def __init__(self, name, pic, city_id, **kwargs):
+    def __init__(self, name, pic, city_name, **kwargs):
         self.name = name
         self.pic = pic
-        self.city_id = city_id
+        self.city_name = city_name
 
     def to_dict(self):
-        return {"city_id": self.city_id, "name": self.name, "pic": self.pic, "id": self.id}
+        return {"city_name": self.city_name, "name": self.name, "pic": self.pic, "id": self.id}
 
     @classmethod
     def get_all_stamp(cls):
@@ -40,14 +40,14 @@ class Stamp(BaseModel):
             return session.query(cls).filter_by(id=stamp_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
 
     @classmethod
-    def query_stamp_by_city_id(cls, city_id: int):
+    def query_stamp_by_city_name(cls, city_name: str):
         with create_db_session() as session:
-            return session.query(cls).filter_by(city_id=city_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
+            return session.query(cls).filter_by(city_name=city_name, is_deleted=DeleteOrNot.NotDeleted.value).all()
 
     @classmethod
-    def add_stamp(cls, name: str, pic: str, city_id: int):
+    def add_stamp(cls, name: str, pic: str, city_name: str):
         with create_db_session() as session:
-            new_stamp = Stamp(name, pic, city_id)
+            new_stamp = Stamp(name, pic, city_name)
             try:
                 session.add(new_stamp)
                 session.commit()
@@ -57,11 +57,11 @@ class Stamp(BaseModel):
                 return False
 
     @classmethod
-    def update_stamp(cls, stamp_info, name: str, pic: str, city_id: int):
+    def update_stamp(cls, stamp_info, name: str, pic: str, city_name: str):
         with create_db_session() as session:
             stamp_info.name = name
             stamp_info.pic = pic
-            stamp_info.city_id = city_id
+            stamp_info.city_name = city_name
             try:
                 session.merge(stamp_info)
                 session.commit()

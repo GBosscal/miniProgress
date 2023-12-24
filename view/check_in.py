@@ -32,6 +32,14 @@ class CheckInPointView(HTTPMethodView):
         data = await CheckInPointService.add_point(user_id, pic, point_id)
         return response(data)
 
+    @openapi.summary("获取用户全部已打卡的打卡点")
+    @openapi.tag("check-in-point")
+    @openapi.parameter("user_id", location="query")
+    async def get(self, request):
+        user_id = request.args.get("user_id")
+        data = await CheckInPointService.get_point_by_user_id(user_id)
+        return response(data=data)
+
 
 check_in_point_blueprint = Blueprint("check_in_point", url_prefix="/point/check-in")
 check_in_point_blueprint.add_route(CheckInPointView.as_view(), uri="")

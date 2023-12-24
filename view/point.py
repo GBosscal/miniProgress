@@ -60,21 +60,33 @@ class PointView(HTTPMethodView):
         return response(data)
 
 
-class CityPointView(HTTPMethodView):
+class CityFuzzyPointView(HTTPMethodView):
 
     @openapi.summary("获取当前城市在当前经纬度附近的打卡点")
     @openapi.tag("point")
-    @openapi.parameter("city_id", location="query")
+    @openapi.parameter("city_name", location="query")
     @openapi.parameter("latitude", location="query")
     @openapi.parameter("longitude", location="query")
     async def get(self, request):
-        city_id = request.args.get("city_id")
+        city_name = request.args.get("city_name")
         latitude = request.args.get("latitude")
         longitude = request.args.get("longitude")
-        data = await PointService.fuzzy_query_point(city_id, latitude, longitude)
+        data = await PointService.fuzzy_query_point(city_name, latitude, longitude)
+        return response(data) if isinstance(data, ErrorCode) else response(data=data)
+
+
+class CityPointView(HTTPMethodView):
+
+    @openapi.summary("获取当前城市的打卡点")
+    @openapi.tag("point")
+    @openapi.parameter("city_name", location="query")
+    async def get(self, request):
+        city_name = request.args.get("city_name")
+        data = await PointService.query_point_by_city_name(city_name)
         return response(data) if isinstance(data, ErrorCode) else response(data=data)
 
 
 point_blueprint = Blueprint("point", url_prefix="/point")
 point_blueprint.add_route(PointView.as_view(), uri="")
-point_blueprint.add_route(CityPointView.as_view(), uri="/fuzzy")
+point_blueprint.add_route(CityFuzzyPointView.as_view(), uri="/fuzzy")
+point_blueprint.add_route(CityPointView.as_view(), uri="/city")

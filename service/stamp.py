@@ -15,16 +15,16 @@ from const import ErrorCode
 class StampService:
 
     @classmethod
-    async def add_stamp(cls, name: str, pic: str, city_id: int):
-        mark = Stamp.add_stamp(name, pic, city_id)
+    async def add_stamp(cls, name: str, pic: str, city_name: str):
+        mark = Stamp.add_stamp(name, pic, city_name)
         return ErrorCode.Success if mark else ErrorCode.StampAddError
 
     @classmethod
-    async def update_stamp(cls, name: str, pic: str, city_id: int, stamp_id: int):
+    async def update_stamp(cls, name: str, pic: str, city_name: str, stamp_id: int):
         stamp_info = Stamp.get_one_stamp(stamp_id)
         if not stamp_info:
             return ErrorCode.StampNotExists
-        mark = Stamp.update_stamp(stamp_info, name, pic, city_id)
+        mark = Stamp.update_stamp(stamp_info, name, pic, city_name)
         return ErrorCode.Success if mark else ErrorCode.StampUpdateError
 
     @classmethod
@@ -33,10 +33,6 @@ class StampService:
         # 获取全部的集邮册
         all_stamps = Stamp.get_all_stamp()
         stamp_ids = [stamp.id for stamp in all_stamps]
-        city_ids = [stamp.city_id for stamp in all_stamps]
-        # 获取全部的城市
-        all_city = City.get_city_by_ids(city_ids)
-        all_city = {str(city.id): city.city_name for city in all_city}
         # 获取全部的打卡点
         all_points = Point.get_point_by_stamp_ids(stamp_ids)
         point_ids = [point.id for point in all_points]
@@ -53,12 +49,15 @@ class StampService:
         # 处理打卡点和集邮册之间的关系
         for stamp in all_stamps:
             stamp_info = stamp.to_dict()
-            stamp_info["city_name"] = all_city.get(str(stamp.city_id)) or ""
             stamp_info["points"] = stamp_points.get(str(stamp.id)) or []
             c_i_p = [point["id"] for point in stamp_info["points"] if point["check_in"] is True]
-            stamp_info["percent"] = round(len(c_i_p) / len(stamp_info["points"]), 4) if len(
-                stamp_info["points"]) != 0 else 0
             stamp_info["check_in_points"] = c_i_p
+            stamp_info["check_in_point_num"] = len(c_i_p)
+            stamp_info["point_num"] = len(stamp_info["points"])
+            if stamp_info["point_num"] != 0:
+                stamp_info["percent"] = round(stamp_info["check_in_point_num"] / stamp_info["point_num"], 4)
+            else:
+                stamp_info["percent"] = 0.0000
             stamp_data.append(stamp_info)
         return stamp_data
 
@@ -69,24 +68,31 @@ class StampService:
         return False
 
     @classmethod
-    async def get_stamp_summary(cls, user_id: int):
+    async def get_stamp_summary(cls, user_id: int, city_name: str):
         """获取个人的集邮总结"""
         stamp_data = await cls.get_stamp_progress(user_id)
-        result = {"point_num": 0, "stamp_num": 0, "area_num": 0, "area_list": []}
+        result = {"check_in_point_num": 0, "stamp_num": 0, "area_num": 0, "area_list": []}
         for stamp in stamp_data:
-            if stamp["city_name"] not in result["area_list"]:
-                result["area_list"].append(stamp["city_name"])
-            result["point_num"] += len(stamp["check_in_points"])
+            if city_name and city_name != stamp["city_name"]:
+                # 只获取指定城市的
+                continue
+            result["check_in_point_num"] += len(stamp["check_in_points"])
             if cls.checking_get_stamp(stamp):
                 result["stamp_num"] += 1
+                if stamp["city_name"] not in result["area_list"]:
+                    result["area_list"].append(stamp["city_name"])
+        result["area_num"] = len(result["area_list"])
         return result
 
     @classmethod
-    async def get_each_stamp(cls, user_id: int):
+    async def get_each_stamp(cls, user_id: int, city_name: str):
         """展示个人的每一个集邮册"""
         stamp_data = await cls.get_stamp_progress(user_id)
         all_cities_stamps = {}
         for stamp in stamp_data:
+            # 获取指定城市的集邮册
+            if city_name and stamp["city_name"] != city_name:
+                continue
             # 获取城市的全部集邮册
             if stamp["city_name"] not in all_cities_stamps:
                 city_stamp = {

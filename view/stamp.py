@@ -18,13 +18,13 @@ from const import ErrorCode
 class AddStampStruct:
     name: str
     pic: str
-    city_id: int
+    city_name: str
 
 
 class UpdateStampStruct:
     name: str
     pic: str
-    city_id: int
+    city_name: str
     stamp_id: int
 
 
@@ -36,8 +36,8 @@ class StampView(HTTPMethodView):
     async def post(self, request):
         name = request.json.get("name")
         pic = request.json.get("pic")
-        city_id = request.json.get("city_id")
-        data = await StampService.add_stamp(name, pic, city_id)
+        city_name = request.json.get("city_name")
+        data = await StampService.add_stamp(name, pic, city_name)
         return response(data)
 
     @openapi.summary("更新一个集邮册")
@@ -46,31 +46,37 @@ class StampView(HTTPMethodView):
     async def put(self, request):
         name = request.json.get("name")
         pic = request.json.get("pic")
-        city_id = request.json.get("city_id")
+        city_name = request.json.get("city_name")
         stamp_id = request.json.get("stamp_id")
-        data = await StampService.update_stamp(name, pic, city_id, stamp_id)
+        data = await StampService.update_stamp(name, pic, city_name, stamp_id)
         return response(data)
 
 
 class PersonalStampSummaryView(HTTPMethodView):
 
     @openapi.summary("获取个人的集邮进度")
+    @openapi.description("如果传入了city_name，则只返回city_name城市的集邮册以及集邮进度。否则返回全部城市的。")
     @openapi.tag("stamp")
     @openapi.parameter("user_id", location="query")
+    @openapi.parameter("city_name", location="query")
     async def get(self, request):
         user_id = request.args.get("user_id")
-        data = await StampService.get_stamp_summary(user_id)
+        city_name = request.args.get("city_name")
+        data = await StampService.get_stamp_summary(user_id, city_name)
         return response(data=data)
 
 
 class PersonalEachStampView(HTTPMethodView):
 
     @openapi.summary("获取个人的每个集邮册")
+    @openapi.description("如果传入了city_name，则只返回city_name城市的集邮册以及集邮进度。否则返回全部城市的。")
     @openapi.tag("stamp")
     @openapi.parameter("user_id", location="query")
+    @openapi.parameter("city_name", location="query")
     async def get(self, request):
         user_id = request.args.get("user_id")
-        data = await StampService.get_each_stamp(user_id)
+        city_name = request.args.get("city_name")
+        data = await StampService.get_each_stamp(user_id,city_name)
         return response(data=data)
 
 
