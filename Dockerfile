@@ -1,4 +1,4 @@
-FROM 3.11.5
+FROM python:3.11.5
 
 ADD . /data
 
@@ -7,7 +7,7 @@ ADD ./sources.list /etc/apt/sources.list
 
 WORKDIR /data
 
-RUN apt clean && apt autoclean && rm -rf /etc/apt/sources.list.d/* && apt install -y vim && apt update -y && apt upgrade -y
+RUN apt clean && apt autoclean && rm -rf /etc/apt/sources.list.d/*  && apt update -y && apt upgrade -y && apt install -y vim
 
 RUN apt install -y libx11-xcb1 && apt install -y libsm6 libxext6  libgl1
 

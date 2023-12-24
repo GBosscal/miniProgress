@@ -53,3 +53,9 @@ class UserService:
         if not mark:
             return ErrorCode.UserUpdateError
         return ErrorCode.Success
+
+    @classmethod
+    async def delete_user_by_open_id(cls, user_open_id: str):
+        """通过open——id删除用户"""
+        mark = User.delete_user(user_open_id=user_open_id)
+        return ErrorCode.Success if mark else ErrorCode.UserDeleteError

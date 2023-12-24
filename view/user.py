@@ -58,6 +58,14 @@ class UserView(HTTPMethodView):
         data = await UserService.update_user_info(user_id, name, avatar)
         return response(data)
 
+    @openapi.summary("通过user_open_id删除用户")
+    @openapi.tag("User")
+    @openapi.parameter("user_open_id", location="query")
+    async def delete(self, request):
+        user_open_id = request.args.get("user_open_id")
+        data = await UserService.delete_user_by_open_id(user_open_id)
+        return response(data)
+
 
 user_blueprint = Blueprint("user", url_prefix="/user", version=1)
 user_blueprint.add_route(UserView.as_view(), uri="")

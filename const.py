@@ -26,6 +26,7 @@ class ErrorCode(EnumBase):
     UserNotExists = "1001002"
     UserUpdateError = "1001003"
     UserAddError = "1001004"
+    UserDeleteError = "1001005"
 
     # 反馈
     FeedbackAddError = "1002001"
@@ -59,6 +60,7 @@ class ErrorMsg(EnumBase):
     UserNotExists = "用户不存在"
     UserUpdateError = "用户信息更新失败"
     UserAddError = "用户新增失败"
+    UserDeleteError = "用户删除失败"
     FeedbackAddError = "新增反馈失败"
     CityExists = "城市已经存在"
     CityAddError = "城市新增失败"

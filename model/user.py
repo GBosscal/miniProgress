@@ -67,3 +67,21 @@ class User(BaseModel):
                 print(traceback.format_exc())
                 session.rollback()
                 return False
+
+    @classmethod
+    def delete_user(cls, user_id: int = None, user_open_id: str = None):
+        if user_id is None and user_open_id is None:
+            print("delete user must by user_id or user_open_id")
+            return False
+        with create_db_session() as session:
+            if user_id:
+                session.query(cls).filter_by(id=user_id).delete()
+            if user_open_id:
+                session.query(cls).filter_by(user_open_id=user_open_id).delete()
+            try:
+                session.commit()
+                return True
+            except Exception:
+                print(traceback.format_exc())
+                session.rollback()
+                return False
