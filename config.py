@@ -19,7 +19,8 @@ class MysqlConfig:
     MysqlUserName = os.environ.get("mysql_name", "root")
     MysqlPSWD = os.environ.get("mysql_pswd", "root")
     MysqlDataBase = os.environ.get("mysql_db", "miniProgress")
-    MysqlEcho = False if os.environ.get("mysql_echo") != "true" else True
+    MysqlEcho = True
+    # MysqlEcho = False if os.environ.get("mysql_echo") != "true" else True
 
 class SystemConfig:
     SysHost = os.environ.get("system_host", "0.0.0.0")

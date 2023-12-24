@@ -41,6 +41,7 @@ class ErrorCode(EnumBase):
     StampNotExists = "1004001"
     StampAddError = "1004002"
     StampUpdateError = "1004003"
+    StampNotExistsInCity = "1004004"
 
     # 打卡点
     PointAddError = "1005001"
@@ -61,14 +62,19 @@ class ErrorMsg(EnumBase):
     UserUpdateError = "用户信息更新失败"
     UserAddError = "用户新增失败"
     UserDeleteError = "用户删除失败"
+
     FeedbackAddError = "新增反馈失败"
+
     CityExists = "城市已经存在"
     CityAddError = "城市新增失败"
     CityNotExists = "城市不存在"
     CityUpdateError = "城市更新失败"
+
     StampNotExists = "集邮册不存在"
     StampAddError = "集邮册新增失败"
     StampUpdateError = "集邮册更新失败"
+    StampNotExistsInCity = "当前城市不存在集邮册"
+
     PointAddError = "打卡点新增失败"
     PointNotExists = "打卡点不存在"
     PointUpdateError = "打卡点更新失败"

@@ -40,6 +40,11 @@ class Stamp(BaseModel):
             return session.query(cls).filter_by(id=stamp_id, is_deleted=DeleteOrNot.NotDeleted.value).first()
 
     @classmethod
+    def query_stamp_by_city_id(cls, city_id: int):
+        with create_db_session() as session:
+            return session.query(cls).filter_by(city_id=city_id, is_deleted=DeleteOrNot.NotDeleted.value).all()
+
+    @classmethod
     def add_stamp(cls, name: str, pic: str, city_id: int):
         with create_db_session() as session:
             new_stamp = Stamp(name, pic, city_id)

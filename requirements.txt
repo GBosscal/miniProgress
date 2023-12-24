@@ -5,3 +5,4 @@ requests
 pymysql
 alembic~=1.12.0
 loguru~=0.7.1
+GeoAlchemy2~=0.14.3
