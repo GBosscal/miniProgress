@@ -98,7 +98,8 @@ class StampService:
                 city_stamp = {
                     "city_name": stamp["city_name"],
                     "city_stamp_num": 0,
-                    "stamps": []
+                    "stamps": [],
+                    "city_point_num": 0
                 }
             else:
                 city_stamp = all_cities_stamps[stamp["city_name"]]
@@ -106,6 +107,7 @@ class StampService:
             if cls.checking_get_stamp(stamp):
                 city_stamp["city_stamp_num"] += 1
             city_stamp["stamps"].append(stamp)
+            city_stamp["city_point_num"] += stamp["point_num"]
             all_cities_stamps[stamp["city_name"]] = city_stamp
         # 从字典转换为列表
         result = [data for _, data in all_cities_stamps.items()]
