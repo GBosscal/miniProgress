@@ -110,12 +110,14 @@ class CityFuzzyStampView(HTTPMethodView):
     @openapi.parameter("user_id", location="query")
     @openapi.parameter("latitude", location="query")
     @openapi.parameter("longitude", location="query")
+    @openapi.parameter("radius", location="query")
     async def get(self, request):
         city_name = request.args.get("city_name")
         user_id = request.args.get("user_id")
         longitude = request.args.get("longitude")
         latitude = request.args.get("latitude")
-        data = await StampService.fuzzy_query_stamp(user_id, city_name, latitude, longitude)
+        radius = request.args.get("radius")
+        data = await StampService.fuzzy_query_stamp(user_id, city_name, latitude, longitude, radius)
         return response(data=data)
 
 

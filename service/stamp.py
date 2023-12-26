@@ -148,9 +148,9 @@ class StampService:
         return result
 
     @classmethod
-    async def fuzzy_query_stamp(cls, user_id: int, city_name: str, latitude, longitude):
+    async def fuzzy_query_stamp(cls, user_id: int, city_name: str, latitude, longitude, radius: int):
         """根据城市ID以及经纬度模糊查询集邮册以及返回集邮册进度"""
-        stamps = Stamp.query_stamp_by_latitude(city_name, latitude, longitude)
+        stamps = Stamp.query_stamp_by_latitude(city_name, latitude, longitude, radius)
         stamp_ids = [stamp[0].id for stamp in stamps]
         stamp_points = cls._stamp_and_point(user_id, stamp_ids)
         all_data = []

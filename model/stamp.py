@@ -93,9 +93,9 @@ class Stamp(BaseModel):
                 return False
 
     @classmethod
-    def query_stamp_by_latitude(cls, city_name: str, latitude, longitude):
+    def query_stamp_by_latitude(cls, city_name: str, latitude, longitude, radius):
         location = cls.create_location(latitude, longitude)
-        radius = 1000  # 距离设定为1000米内
+        # radius = 1000  # 距离设定为1000米内
         with create_db_session() as session:
             results = session.query(cls, func.ST_Distance_Sphere(cls.location, location).label('distance')).filter(
                 cls.city_name == city_name,
