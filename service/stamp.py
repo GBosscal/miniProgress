@@ -141,7 +141,7 @@ class StampService:
             point_info = point[0].to_dict()
             point_info["check_in"] = False
             point_info["distance"] = point[1]
-            if str(point.id) in c_i_p:
+            if str(point[0].id) in c_i_p:
                 c_percent += 1
                 point_info["check_in"] = True
             result["points"].append(point_info)
