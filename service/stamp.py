@@ -15,24 +15,36 @@ from const import ErrorCode
 class StampService:
 
     @classmethod
-    async def add_stamp(cls, name: str, pic: str, city_name: str):
-        mark = Stamp.add_stamp(name, pic, city_name)
+    async def add_stamp(cls, name: str, pic: str, city_name: str, latitude, longitude):
+        mark = Stamp.add_stamp(name, pic, city_name, latitude, longitude)
         return ErrorCode.Success if mark else ErrorCode.StampAddError
 
     @classmethod
-    async def update_stamp(cls, name: str, pic: str, city_name: str, stamp_id: int):
+    async def update_stamp(cls, name: str, pic: str, city_name: str, stamp_id: int, latitude, longitude):
         stamp_info = Stamp.get_one_stamp(stamp_id)
         if not stamp_info:
             return ErrorCode.StampNotExists
-        mark = Stamp.update_stamp(stamp_info, name, pic, city_name)
+        mark = Stamp.update_stamp(stamp_info, name, pic, city_name, latitude, longitude)
         return ErrorCode.Success if mark else ErrorCode.StampUpdateError
 
     @classmethod
-    async def get_stamp_progress(cls, user_id: int) -> list:
-        """获取个人的集邮进度"""
-        # 获取全部的集邮册
-        all_stamps = Stamp.get_all_stamp()
-        stamp_ids = [stamp.id for stamp in all_stamps]
+    def _format_stamp_data(cls, stamp: Stamp, stamp_points: dict):
+        """处理已经打卡的打卡点和打卡点之间的关系"""
+        stamp_info = stamp.to_dict()
+        stamp_info["points"] = stamp_points.get(str(stamp.id)) or []
+        c_i_p = [point["id"] for point in stamp_info["points"] if point["check_in"] is True]
+        stamp_info["check_in_points"] = c_i_p
+        stamp_info["check_in_point_num"] = len(c_i_p)
+        stamp_info["point_num"] = len(stamp_info["points"])
+        if stamp_info["point_num"] != 0:
+            stamp_info["percent"] = round(stamp_info["check_in_point_num"] / stamp_info["point_num"], 4)
+        else:
+            stamp_info["percent"] = 0.0000
+        return stamp_info
+
+    @classmethod
+    def _stamp_and_point(cls, user_id: int, stamp_ids: list):
+        """处理集邮册和打卡点之间的关系"""
         # 获取全部的打卡点
         all_points = Point.get_point_by_stamp_ids(stamp_ids)
         point_ids = [point.id for point in all_points]
@@ -45,20 +57,16 @@ class StampService:
             point_info = point.to_dict()
             point_info["check_in"] = True if str(point.id) in check_in_points else False
             stamp_points[str(point.stamp_id)].append(point_info)
-        stamp_data = []
-        # 处理打卡点和集邮册之间的关系
-        for stamp in all_stamps:
-            stamp_info = stamp.to_dict()
-            stamp_info["points"] = stamp_points.get(str(stamp.id)) or []
-            c_i_p = [point["id"] for point in stamp_info["points"] if point["check_in"] is True]
-            stamp_info["check_in_points"] = c_i_p
-            stamp_info["check_in_point_num"] = len(c_i_p)
-            stamp_info["point_num"] = len(stamp_info["points"])
-            if stamp_info["point_num"] != 0:
-                stamp_info["percent"] = round(stamp_info["check_in_point_num"] / stamp_info["point_num"], 4)
-            else:
-                stamp_info["percent"] = 0.0000
-            stamp_data.append(stamp_info)
+        return stamp_points
+
+    @classmethod
+    async def get_stamp_progress(cls, user_id: int) -> list:
+        """获取个人的集邮进度"""
+        # 获取全部的集邮册
+        all_stamps = Stamp.get_all_stamp()
+        stamp_ids = [stamp.id for stamp in all_stamps]
+        stamp_points = cls._stamp_and_point(user_id, stamp_ids)
+        stamp_data = [cls._format_stamp_data(stamp, stamp_points) for stamp in all_stamps]
         return stamp_data
 
     @staticmethod
@@ -138,3 +146,16 @@ class StampService:
             result["points"].append(point_info)
         result["percent"] = round(c_percent / len(c_i_p), 4) if len(c_i_p) != 0 else 0
         return result
+
+    @classmethod
+    async def fuzzy_query_stamp(cls, user_id: int, city_name: str, latitude, longitude):
+        """根据城市ID以及经纬度模糊查询集邮册以及返回集邮册进度"""
+        stamps = Stamp.query_stamp_by_latitude(city_name, latitude, longitude)
+        stamp_ids = [stamp[0].id for stamp in stamps]
+        stamp_points = cls._stamp_and_point(user_id, stamp_ids)
+        all_data = []
+        for stamp in stamps:
+            data = cls._format_stamp_data(stamp[0], stamp_points)
+            data["distance"] = stamp[1]
+            all_data.append(data)
+        return all_data

@@ -51,6 +51,7 @@ class ErrorCode(EnumBase):
 
     # 打卡打卡点
     CheckInPointAddError = "1006001"
+    CheckInPointTooFar = "1006002"
 
 
 class ErrorMsg(EnumBase):
@@ -80,6 +81,9 @@ class ErrorMsg(EnumBase):
     PointNotExists = "打卡点不存在"
     PointUpdateError = "打卡点更新失败"
     PointDupName = "打卡点在当前集邮册中已存在"
+
+    CheckInPointAddError = "打卡失败"
+    CheckInPointTooFar = "距离打卡点太远，无法打卡!"
 
 
 class RedisKey:

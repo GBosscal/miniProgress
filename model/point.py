@@ -23,7 +23,7 @@ class Point(BaseModel):
     name = Column(VARCHAR(32), nullable=False)  # 打卡点ID
     pic = Column(VARCHAR(128), nullable=True)  # 打卡点图片
     stamp_id = Column(Integer, nullable=False)  # 集邮册ID
-    location = Column(Geometry('POINT'), default="Point(0 0)")
+    location = Column(Geometry('POINT'))
 
     # latitude = Column(DECIMAL(10, 8))  # 打卡点的纬度
     # longitude = Column(DECIMAL(11, 8))  # 打卡点的经度
@@ -51,8 +51,8 @@ class Point(BaseModel):
             "stamp_id": self.stamp_id, "name": self.name,
             "pic": self.pic, "id": self.id
         }
-        latitude, longitude = self.get_latitude_longitude(self.id)
-        data.update({"latitude": latitude, "longitude": longitude})
+        # latitude, longitude = self.get_latitude_longitude(self.id)
+        # data.update({"latitude": latitude, "longitude": longitude})
         return data
 
     @classmethod
@@ -90,11 +90,22 @@ class Point(BaseModel):
         location = cls.create_location(latitude, longitude)
         radius = 1000  # 距离设定为1000米内
         with create_db_session() as session:
-            results = session.query(cls).filter(
+            results = session.query(cls, func.ST_Distance_Sphere(cls.location, location).label('distance')).filter(
                 cls.stamp_id.in_(stamp_ids),
                 func.ST_Distance_Sphere(cls.location, location) <= radius
             ).all()
             return results
+
+    @classmethod
+    def checking_radius_for_point(cls, point_id: int, latitude, longitude):
+        location = cls.create_location(latitude, longitude)
+        radius = 15  # 距离设定为1000米内
+        with create_db_session() as session:
+            result = session.query(cls).filter(
+                cls.id == point_id,
+                func.ST_Distance_Sphere(cls.location, location) <= radius
+            ).first()
+            return True if result else False
 
     @classmethod
     def update_point(cls, point_info, name: str, pic: str, stamp_id: int, latitude, longitude):

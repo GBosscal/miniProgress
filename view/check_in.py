@@ -16,8 +16,9 @@ from service.check_in import CheckInPointService
 
 class AddCheckInPointStruct:
     user_id: int
-    pic: str
     point_id: int
+    latitude: str
+    longitude: str
 
 
 class CheckInPointView(HTTPMethodView):
@@ -29,7 +30,9 @@ class CheckInPointView(HTTPMethodView):
         user_id = request.json.get("user_id")
         pic = request.json.get("pic")
         point_id = request.json.get("point_id")
-        data = await CheckInPointService.add_point(user_id, pic, point_id)
+        latitude = request.json.get("latitude")
+        longitude = request.json.get("longitude")
+        data = await CheckInPointService.add_point(user_id, pic, point_id, latitude, longitude)
         return response(data)
 
     @openapi.summary("获取用户全部已打卡的打卡点")

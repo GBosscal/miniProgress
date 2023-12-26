@@ -19,6 +19,8 @@ class AddStampStruct:
     name: str
     pic: str
     city_name: str
+    latitude: str
+    longitude: str
 
 
 class UpdateStampStruct:
@@ -26,6 +28,8 @@ class UpdateStampStruct:
     pic: str
     city_name: str
     stamp_id: int
+    latitude: str
+    longitude: str
 
 
 class StampView(HTTPMethodView):
@@ -37,7 +41,9 @@ class StampView(HTTPMethodView):
         name = request.json.get("name")
         pic = request.json.get("pic")
         city_name = request.json.get("city_name")
-        data = await StampService.add_stamp(name, pic, city_name)
+        latitude = request.json.get("latitude")
+        longitude = request.json.get("longitude")
+        data = await StampService.add_stamp(name, pic, city_name, latitude, longitude)
         return response(data)
 
     @openapi.summary("更新一个集邮册")
@@ -48,7 +54,9 @@ class StampView(HTTPMethodView):
         pic = request.json.get("pic")
         city_name = request.json.get("city_name")
         stamp_id = request.json.get("stamp_id")
-        data = await StampService.update_stamp(name, pic, city_name, stamp_id)
+        latitude = request.json.get("latitude")
+        longitude = request.json.get("longitude")
+        data = await StampService.update_stamp(name, pic, city_name, stamp_id, latitude, longitude)
         return response(data)
 
 
@@ -94,8 +102,26 @@ class PersonalSingleStampView(HTTPMethodView):
         return response(data=data)
 
 
+class CityFuzzyStampView(HTTPMethodView):
+
+    @openapi.summary("获取当前城市，当前位置附近的集邮册")
+    @openapi.tag("stamp")
+    @openapi.parameter("city_name", location="query")
+    @openapi.parameter("user_id", location="query")
+    @openapi.parameter("latitude", location="query")
+    @openapi.parameter("longitude", location="query")
+    async def get(self, request):
+        city_name = request.args.get("city_name")
+        user_id = request.args.get("user_id")
+        longitude = request.args.get("longitude")
+        latitude = request.args.get("latitude")
+        data = await StampService.fuzzy_query_stamp(user_id, city_name, latitude, longitude)
+        return response(data=data)
+
+
 stamp_blueprint = Blueprint("stamp", url_prefix="/stamp")
 stamp_blueprint.add_route(StampView.as_view(), uri="")
 stamp_blueprint.add_route(PersonalEachStampView.as_view(), uri="/personal")
 stamp_blueprint.add_route(PersonalStampSummaryView.as_view(), uri="/personal/summary")
 stamp_blueprint.add_route(PersonalSingleStampView.as_view(), uri="/personal/single")
+stamp_blueprint.add_route(CityFuzzyStampView.as_view(), uri="/city/fuzzy")

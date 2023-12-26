@@ -43,7 +43,12 @@ class PointService:
             return ErrorCode.StampNotExistsInCity
         stamp_ids = [stamp.id for stamp in stamps]
         points = Point.query_point_by_latitude(stamp_ids, latitude, longitude)
-        return [point.to_dict() for point in points]
+        all_data = []
+        for point in points:
+            data = point[0].to_dict()
+            data["distance"] = point[1]
+            all_data.append(data)
+        return all_data
 
     @classmethod
     async def query_point_by_city_name(cls, city_name: str):
