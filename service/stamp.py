@@ -122,15 +122,15 @@ class StampService:
         return result
 
     @classmethod
-    async def get_one_stamp(cls, stamp_id: int, user_id: int):
+    async def get_one_stamp(cls, stamp_id: int, user_id: int, latitude, longitude):
         """展示单个集邮册"""
         # 获取特定的集邮册
         stamp_info = Stamp.get_one_stamp(stamp_id)
         if not stamp_info:
             return ErrorCode.StampNotExists
         # 获取集邮册的所有打卡点
-        all_points = Point.get_point_by_stamp_ids([stamp_id])
-        point_ids = [point.id for point in all_points]
+        all_points = Point.get_point_and_distance_by_stamp_ids([stamp_id], latitude, longitude)
+        point_ids = [point[0].id for point in all_points]
         # 获取已经打卡的打卡点
         c_i_p = CheckInPoint.get_check_in_point_by_user_id(user_id, point_ids) or []
         c_i_p = {str(point.point_id): point for point in c_i_p}
@@ -138,8 +138,9 @@ class StampService:
         result["points"] = []
         c_percent = 0
         for point in all_points:
-            point_info = point.to_dict()
+            point_info = point[0].to_dict()
             point_info["check_in"] = False
+            point_info["distance"] = point[1]
             if str(point.id) in c_i_p:
                 c_percent += 1
                 point_info["check_in"] = True

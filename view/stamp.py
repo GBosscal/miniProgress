@@ -95,10 +95,14 @@ class PersonalSingleStampView(HTTPMethodView):
     @openapi.tag("stamp")
     @openapi.parameter("user_id", location="query")
     @openapi.parameter("stamp_id", location="query")
+    @openapi.parameter("latitude", location="query")
+    @openapi.parameter("longitude", location="query")
     async def get(self, request):
         user_id = request.args.get("user_id")
         stamp_id = request.args.get("stamp_id")
-        data = await StampService.get_one_stamp(stamp_id, user_id)
+        latitude = request.args.get("latitude")
+        longitude = request.args.get("longitude")
+        data = await StampService.get_one_stamp(stamp_id, user_id, latitude, longitude)
         return response(data=data)
 
 

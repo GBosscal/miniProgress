@@ -62,6 +62,13 @@ class Point(BaseModel):
                 is_deleted=DeleteOrNot.NotDeleted.value).all()
 
     @classmethod
+    def get_point_and_distance_by_stamp_ids(cls, stamp_ids: list, latitude, longitude):
+        location = cls.create_location(latitude, longitude)
+        with create_db_session() as session:
+            return session.query(cls, func.ST_Distance_Sphere(cls.location, location).label('distance')).filter(
+                cls.stamp_id.in_(stamp_ids)).filter_by(is_deleted=DeleteOrNot.NotDeleted.value).all()
+
+    @classmethod
     def add_point(cls, name: str, pic: str, stamp_id: int, latitude, longitude):
         with create_db_session() as session:
             new_point = Point(name, pic, stamp_id, cls.create_location(latitude, longitude))
