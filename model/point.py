@@ -106,7 +106,7 @@ class Point(BaseModel):
     @classmethod
     def checking_radius_for_point(cls, point_id: int, latitude, longitude):
         location = cls.create_location(latitude, longitude)
-        radius = 15  # 距离设定为1000米内
+        radius = 30  # 距离设定为30米内
         with create_db_session() as session:
             result = session.query(cls).filter(
                 cls.id == point_id,
