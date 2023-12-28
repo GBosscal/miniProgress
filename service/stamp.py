@@ -9,7 +9,7 @@ from model.city import City
 from model.stamp import Stamp
 from model.point import Point
 from model.check_in_point import CheckInPoint
-from const import ErrorCode
+from const import ErrorCode, ChineseCities
 
 
 class StampService:
@@ -129,8 +129,11 @@ class StampService:
             city_stamp["stamps"].append(stamp)
             city_stamp["city_point_num"] += stamp["point_num"]
             all_cities_stamps[stamp["city_name"]] = city_stamp
+        # 获取没解锁列表
+        lock_cities = [city for city in ChineseCities if city not in all_cities_stamps]
         # 从字典转换为列表
-        result = [data for _, data in all_cities_stamps.items()]
+        unlock_cities = [data for _, data in all_cities_stamps.items()]
+        result = {"lock_cities": lock_cities, "unlock_cities": unlock_cities}
         return result
 
     @classmethod
