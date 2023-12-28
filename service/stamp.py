@@ -79,17 +79,29 @@ class StampService:
     async def get_stamp_summary(cls, user_id: int, city_name: str):
         """获取个人的集邮总结"""
         stamp_data = await cls.get_stamp_progress(user_id)
-        result = {"check_in_point_num": 0, "stamp_num": 0, "area_num": 0, "area_list": []}
+        result = {
+            "check_in_point_num": 0, "stamp_num": 0,
+            "area_num": 0, "area_list": [],
+            "unlock_area_num": 0, "unlock_area_list": [],
+            "point_num": 0
+        }
         for stamp in stamp_data:
             if city_name and city_name != stamp["city_name"]:
                 # 只获取指定城市的
                 continue
             result["check_in_point_num"] += len(stamp["check_in_points"])
+            result["point_num"] += stamp["point_num"]
             if cls.checking_get_stamp(stamp):
                 result["stamp_num"] += 1
                 if stamp["city_name"] not in result["area_list"]:
                     result["area_list"].append(stamp["city_name"])
+            else:
+                if stamp["city_name"] not in result["unlock_area_list"]:
+                    result["unlock_area_list"].append(stamp["city_name"])
         result["area_num"] = len(result["area_list"])
+        result["unlock_area_num"] = len(result["unlock_area_list"])
+        del result["area_list"]
+        del result["unlock_area_list"]
         return result
 
     @classmethod
