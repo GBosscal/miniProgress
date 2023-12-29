@@ -27,7 +27,11 @@ class CheckInPoint(BaseModel):
         self.point_id = point_id
 
     def to_dict(self):
-        return {"point_id": self.point_id, "user_id": self.user_id, "pic": self.pic, "id": self.id}
+        return {
+            "point_id": self.point_id, "user_id": self.user_id,
+            "pic": self.pic, "id": self.id,
+            "created_time": self.created_time
+        }
 
     @classmethod
     def get_check_in_point_by_user_id(cls, user_id: int, point_ids: list):
@@ -41,7 +45,7 @@ class CheckInPoint(BaseModel):
             ).all()
 
     @classmethod
-    def get_points_by_user_id(cls, user_id:int):
+    def get_points_by_user_id(cls, user_id: int):
         with create_db_session() as session:
             return session.query(cls).filter(
                 and_(
