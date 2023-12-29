@@ -119,7 +119,8 @@ class StampService:
                     "city_name": stamp["city_name"],
                     "city_stamp_num": 0,
                     "stamps": [],
-                    "city_point_num": 0
+                    "city_point_num": 0,
+                    "city_pic": f"https://env-00jx4sbgbj6g.normal.cloudstatic.cn/city/{stamp['city_name']}.png"
                 }
             else:
                 city_stamp = all_cities_stamps[stamp["city_name"]]
