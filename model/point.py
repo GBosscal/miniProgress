@@ -51,8 +51,8 @@ class Point(BaseModel):
             "stamp_id": self.stamp_id, "name": self.name,
             "pic": self.pic, "id": self.id
         }
-        # latitude, longitude = self.get_latitude_longitude(self.id)
-        # data.update({"latitude": latitude, "longitude": longitude})
+        latitude, longitude = self.get_latitude_longitude(self.id)
+        data.update({"latitude": latitude, "longitude": longitude})
         return data
 
     @classmethod
