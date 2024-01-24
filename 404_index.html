@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京时间和备案号</title>
+    <style>
+        /* 添加一些样式以使备案号悬挂在底部 */
+        body {
+            margin-bottom: 60px; /* 保证备案号不会被其他内容覆盖 */
+        }
+
+        #beian-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f8f8f8;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 北京时间 -->
+<div>
+    <h1>北京时间</h1>
+    <p id="beijing-time"></p>
+</div>
+
+<!-- 工信部备案号 -->
+<div id="beian-container">
+    <p>工信部备案号：<a href="https://beian.miit.gov.cn/" target="_blank">湘ICP备2024043991号</a></p>
+</div>
+
+<!-- JavaScript 代码获取北京时间 -->
+<script>
+    function updateBeijingTime() {
+        var now = new Date();
+        var options = {
+            timeZone: 'Asia/Shanghai',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        };
+        var beijingTime = now.toLocaleTimeString('en-US', options);
+        document.getElementById('beijing-time').textContent = '当前北京时间：' + beijingTime;
+    }
+
+    // 每秒更新一次时间
+    setInterval(updateBeijingTime, 1000);
+
+    // 初始加载时间
+    updateBeijingTime();
+</script>
+
+</body>
+</html>

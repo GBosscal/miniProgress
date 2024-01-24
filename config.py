@@ -25,7 +25,7 @@ class MysqlConfig:
 
 class SystemConfig:
     SysHost = os.environ.get("system_host", "0.0.0.0")
-    SysPort = int(os.environ.get("system_port", "12580"))
+    SysPort = int(os.environ.get("system_port", "25800"))
     SysWorkerNum = int(os.environ.get("system_worker", "10"))
     SystemTest = os.environ.get("system_test", "false")
 
